@@ -1,0 +1,1335 @@
+﻿@using LoginFinal.HelpingClasses 
+@{
+    if(ViewBag.User.Role==3)
+    {
+        ViewData["Title"] = " Seller Account";
+    }
+    else
+    {
+        ViewData["Title"] = " Buyer Account";
+    }
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+
+<head>
+            <style>
+   .dataTables_filter {
+    white-space:nowrap;
+}
+
+.dataTables_filter label, .dataTables_filter input {
+    display: inline-block;
+}
+.dataTables_filter input:active {
+    display: inline-block;
+    border:none;
+}
+[type=search] {
+    display: block;
+    width: 100%;
+    height: calc(1.5em + 0.75rem + 2px);
+    padding: 0.375rem 0.75rem;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+</style>
+</head>
+<form action="@Url.Action("PostUpdateProfile","Auth")" method="post" enctype="multipart/form-data">
+    <div class="py-5">
+        <div class="container">
+            @if(ViewBag.msg!="")
+            {
+                <div class="h5 alert alert-info" role="alert">
+                    <span>@ViewBag.msg</span>
+                </div>
+            }
+            @if (ViewBag.User.IsActive == 3)
+            {
+               <script type="text/javascript">
+                    $(window).on('load', function() {
+                    $('#messagemodal2').modal('show');
+                        });
+                    </script>
+
+            }
+            @if (ViewBag.User.IsActive == 2 && ViewBag.User.Role == 3)
+            {
+                <script type="text/javascript">
+                    $(window).on('load', function() {
+                    $('#modal2').modal('show');
+
+                  
+                        });
+                    </script>
+            }
+            @if (ViewBag.suces == true)
+            {
+                <div class="h4 alert alert-sucess" role="alert">
+                    Data Updated Successfully
+                </div>
+            }
+            <div class="row">
+                <!-- Main Content -->
+                <aside class="col-md-4">
+                    <div class="box mb-3 shadow-sm rounded bg-white profile-box text-center">
+
+                        <div class="py-4 px-3 border-bottom">
+
+                            <input type="hidden" name="EncId" value="@StringCipher.EncryptId(ViewBag.User.Id)" />
+
+
+                             <img src="~/@ViewBag.User.ImagePath" height="256" width="256" id="previewImg" onerror="this.onerror=null; this.src='/FrontAssets/images/user/s4.png';" class="img-fluid mt-2 rounded-circle" alt="Responsive image">
+
+
+                            <h5 class="font-weight-bold text-dark mb-1 mt-4" >@ViewBag.User.FirstName @ViewBag.User.LastName</h5>
+                            
+                            @if (ViewBag.User.Position != null)
+                            {
+                                <p class="mb-0 text-muted">@ViewBag.User.Position</p>
+                            }
+
+                            
+                            <div class="custom-control custom-switch my-2">
+                                @if (@ViewBag.User.Status == 1)
+                                {
+                                    <input type="checkbox" onclick="myFunction()" class="custom-control-input" id="customSwitches" autofocus checked="checked">
+                                     <label id="status" class="custom-control-label" for="customSwitches">Online</label>
+                                }
+                                else
+                                {
+                                    <input type="checkbox" onclick="myFunction()" class="custom-control-input" id="customSwitches">
+                                     <label id="status" class="custom-control-label" for="customSwitches">Offline</label>
+                                }
+                                <input type="hidden" id="stat" name="val" value="@ViewBag.User.Status"/>
+                               
+                            </div>
+
+                            
+
+                           
+                        </div>
+                       
+                        <!-- Image Input -->
+                        <div class="p-4">
+                            <label data-toggle="tooltip" data-placement="top" data-original-title="Upload New Picture" class="btn btn-info m-0" for="fileAttachmentBtn">
+                                <i class="mdi mdi-image"></i> Upload
+                                <input id="fileAttachmentBtn" name="ImagePath" onchange="loadImageFile();" accept="image/*" type="file" class="d-none">
+                            </label>
+                        </div>
+                    </div>
+                     <!-- End Image Input -->
+
+                     <!-- Input -->
+                    <div class="shadow-sm rounded bg-white mb-3">
+                     <div class="box-body">
+                        <div class="p-3">
+                           <div class="form-group mb-4">
+                              <label class="mb-1">About</label>
+                              <div class="position-relative">
+                                    @if(@ViewBag.User!=null)
+                                    {
+                                 <textarea name="Description" class="form-control" onKeyDown="limitText(this,100);" rows="4" placeholder="Write something about yourself...">@ViewBag.User.Description</textarea>
+                                    }
+                                    else
+                                    {
+                                  <textarea name="Description" class="form-control" rows="4" onKeyDown="limitText(this,100);" placeholder="Write something about yourself..."></textarea>
+                                    }
+                              </div>
+                           </div>
+                            <!-- End Input -->
+                                @if (ViewBag.User.Role != 4)
+                                {
+                                    <!-- Input -->
+                                    <div class="form-group mb-0">
+                                        <label class="mb-1 w-100">
+                                            Skills
+                                            <span class="text-danger">*</span>
+                                        </label>
+
+                                        <div class="form-group">
+                                            @if (@ViewBag.Skills != null)
+                                            {
+                                                <input name="SkillName" id="tag1" type="text" class="form-control select" data-role="tagsinput" value="@ViewBag.Skills.SkillName" required=""  multiple>
+                                            }
+                                            else
+                                            {
+                                                <input name="SkillName" id="tag1" type="text" class="form-select select" data-role="tagsinput" required="" multiple>
+                                            }
+                                            <span style="font-size:11px;">7 tags maximum.</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                     </div>
+                     </div>
+                      <!-- End Input -->
+                    @if (ViewBag.User.Role != 4)
+                    {
+                        <div class="shadow-sm rounded bg-white mb-3">
+                            <div class="box-body">
+                                <div class="p-3">
+                                    <!-- Input -->
+                           <div class="form-group mb-0">
+                                        <label class="mb-1 w-100">
+                                            Search Tags
+                                        </label>
+
+                                        <div class="form-group">
+                                            @if (@ViewBag.Tags != null)
+                                            {
+                                                <input name="TagName" id="tag2" value="@ViewBag.Tags.TagName" type="text" class="form-control select" data-role="tagsinput" value="@ViewBag.Tags.TagName" multiple>
+                                            }
+                                            else
+                                            {
+                                                <input name="TagName" id="tag2" type="text" class="form-select select" data-role="tagsinput" multiple>
+                                            }
+                                            <span style="font-size:11px;">5 tags maximum. Use letters and numbers only.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Input -->
+                    }
+                    <!--Start Education Input -->
+                    <div class="shadow-sm rounded bg-white mb-3">
+                     <div class="box-title border-bottom p-3">
+                        <div class="row">
+                           <div class="col-md-6 col-6 d-flex justify-content-start">
+                              <h6 class="m-0">Education</h6>
+                           </div>
+                           <div class="col-md-6 col-6 d-flex justify-content-end">
+                              <p class="m-0"><a onclick="showDiv()" style="cursor:pointer; color:#138496;">Add New</a></p>
+                           </div>
+                        </div>
+                     </div>
+                     
+                     <div class="box-body" id="myDIV" style="display: none;">
+                        <div class="py-3">
+
+                              <div class="col-sm-12 mb-2">
+                                 <div class="position-relative icon-form-control mb-2">
+                                    <i class="mdi mdi-hospital-building position-absolute text-muted"></i>
+                                    <input placeholder="College/University Name" onKeyDown="limitText(this,50);" id="ins" type="text" class="form-control">
+                                 </div>
+                              </div>
+
+                              <div class="col-sm-12 mb-3">
+                                 <div class="position-relative icon-form-control mb-2">
+                                    <i class="mdi mdi-school position-absolute text-muted"></i>
+                                    <input placeholder="Degree Name" type="text" onKeyDown="limitText(this,50);" id="dn" class="form-control">
+                                 </div>
+                              </div>
+
+                              <div class="row px-3">
+                                 <div class="col-sm-6 col-6 col-md-6 mb-2">
+                                    <label id="FROM" class="form-label">Start Date</label>
+                                    <!-- Input -->
+                                          <div class="form-group">
+                                             <input type="date" class="form-control" id="sd">
+                                          </div>
+                                    <!-- End Input -->
+                                 </div>
+                                 <div class="col-sm-6 col-6 col-md-6 mb-2">
+                                    <label id="TO" class="form-label">End Date</label>
+                                    <!-- Input -->
+                                          <div class="form-group">
+                                             <input type="date" class="form-control" id="ed">
+                                          </div>
+                                    <!-- End Input -->
+                                 </div>
+                                
+                              </div>
+
+                              <div class="row px-3">
+                                 <div class="col-sm-6 col-6 col-md-6">
+                                    <button type="button" onclick="hideDiv()" class="btn btn-outline-success w-100">Cancel</button>
+                                 </div>
+                                 <div class="col-sm-6 col-6 col-md-6">
+                                    <button type="button" onclick="fieldShow()" class="btn btn-success w-100">Add</button>
+                                 </div>
+                              </div>
+                             
+                            </div>  
+                     </div>
+                     
+
+
+                     <div class="box-body" id="myDIV2" style="display: none;">
+                        <div class="py-3">
+
+                              <div class="col-sm-12 mb-2">
+                                 <div class="position-relative icon-form-control mb-2">
+                                    <i class="mdi mdi-hospital-building position-absolute text-muted"></i>
+                                    <input placeholder="College/University Name" onKeyDown="limitText(this,50);" type="text" id="insti1" class="form-control">
+                                 </div>
+                              </div>
+
+                              <div class="col-sm-12 mb-3">
+                                 <div class="position-relative icon-form-control mb-2">
+                                    <i class="mdi mdi-school position-absolute text-muted"></i>
+                                    <input placeholder="Degree Name" type="text" onKeyDown="limitText(this,50);" id="degree1" class="form-control">
+                                 </div>
+                              </div>
+
+                              <div class="row px-3">
+                                 <div class="col-sm-6 col-6 col-md-6 mb-2">
+                                    <label id="FROM" class="form-label">Start Date</label>
+                                    <!-- Input -->
+                                          <div class="form-group">
+                                             <input type="date" id="start1" class="form-control"  >
+                                          </div>
+                                    <!-- End Input -->
+                                 </div>
+                                 <div class="col-sm-6 col-6 col-md-6 mb-2">
+                                    <label id="TO" class="form-label">End Date</label>
+                                    <!-- Input -->
+                                          <div class="form-group">
+                                             <input type="date" id="end1" class="form-control">
+                                          </div>
+                                    <!-- End Input -->
+                                 </div>
+                                
+                              </div>
+                              </div>
+
+                              <div class="row px-3">
+                                 <div class="col-sm-6 col-6 col-md-6">
+                                    <button type="button" onclick="hideDiv()" class="btn btn-outline-success w-100">Cancel</button>
+                                 </div>
+                                 <div class="col-sm-6 col-6 col-md-6">
+                                     
+                                    <button type="button" id="Upbtn" class="btn btn-success w-100">Update</button>
+                                 </div>
+                              </div>
+                     </div>
+                    
+                       
+                     @if (@ViewBag.Education != null)
+                        { 
+                            foreach (var x in ViewBag.Education)
+                            {
+                                
+                                
+                                <div class="ml-4 container-sm p-3 pbox" id='dig-@x.Id'>
+
+                                    <p style="float:right; margin-right:10px;"><span><button type="button" class="btn fa fa-pencil" onclick="editfun(@x.Id)"></button></span> <span><button type="button" class="btn fa fa-trash" onclick="deledu(@x.Id)"></button></span></p>
+                                    <br/>
+                                    <p id="degree-@x.Id">Degree : @x.DegreeName</p>
+                                    <p id="insti-@x.Id">Institute: @x.InstituteName</p>
+                                    <p id="duration-@x.Id" class="text-muted">Duration : @Convert.ToDateTime(x.StartDate).ToString("dd-MM-yyyy") To @Convert.ToDateTime(x.EndDate).ToString("dd-MM-yyyy")</p>
+                                </div>
+                                
+
+                                
+
+                                <input type="hidden" id="funval-@x.Id" value="@x.Id" />
+                               
+                            }
+
+                        }
+                        <div id="ErrorMsg"></div>
+                        <div class="pb-4 ml-4 container-sm" id="EduInfo"></div>
+                  </div>
+
+
+                   <!-- End Education Input -->
+                    <div class="shadow-sm rounded bg-white mb-3">
+                        <div class="box-title border-bottom p-3">
+                            <h6 class="m-0">Social Profiles</h6>
+                            <p class="mb-0 mt-0 small">
+                                Add elsewhere links to your profile.
+                            </p>
+
+                      <div class="box-body">
+                        <div class="p-3">
+                           <div class="position-relative icon-form-control mb-2">
+                               <i class='fa fa-stack-overflow position-absolute text-muted'></i>
+                                    @if (@ViewBag.User != null)
+                                    {
+                                        <input name="StackOverFlowLink" value="@ViewBag.User.StackOverFlowLink" placeholder="Add Stackoverflow Link" type="url" class="form-control">
+                                    }
+                                    else
+                                    {
+                                         <input name="StackOverFlowLink" placeholder="Add Stackoverflow Link" type="url" class="form-control">
+                                    }
+                                </div>
+                           <div class="position-relative icon-form-control mb-2">
+                              <i class="mdi mdi-facebook position-absolute text-muted"></i>
+                               @if (@ViewBag.User != null)
+                               {
+                                    <input name="FacebookLink" value="@ViewBag.User.FacebookLink" placeholder="Add Facebook Link" type="url" class="form-control">
+                               }
+                               else
+                               {
+                                   <input name="FacebookLink" placeholder="Add Facebook Link" type="url" class="form-control">
+                               }
+                           </div>
+                           <div class="position-relative icon-form-control mb-2">
+                              <i class="mdi mdi-twitter position-absolute text-muted"></i>
+                                    @if (@ViewBag.User != null)
+                                    {
+                                        <input name="TwitterLink" value="@ViewBag.User.TwitterLink" placeholder="Add Twitter Link" type="url" class="form-control">
+                                    }
+                                    else
+                                    {
+                                        <input name="TwitterLink" placeholder="Add Twitter Link" type="url" class="form-control">
+                                    }
+                          </div>
+
+                           <div class="position-relative icon-form-control mb-2">
+                              <i class="fa fa-dribbble position-absolute text-muted"></i>
+                                    @if (@ViewBag.User != null)
+                                    {
+                                        <input name="DribbleLink" value="@ViewBag.User.DribbleLink" placeholder="Add Dribble Link" type="url" class="form-control">
+                                    }
+                                    else
+                                    {
+                                        <input name="DribbleLink" placeholder="Add Dribble Link" type="url" class="form-control">
+                                    }
+                          </div>
+
+                          <div class="position-relative icon-form-control mb-2">
+                              <i class='fa fa-vimeo position-absolute text-muted'></i>
+                                    @if (@ViewBag.User != null)
+                                    {
+                                        <input name="VimeoLink" value="@ViewBag.User.VimeoLink" placeholder="Add Vimeo Link" type="url" class="form-control">
+                                    }
+                                    else
+                                    {
+                                        <input name="VimeoLink" placeholder="Add Vimeo Link" type="url" class="form-control">
+                                    }
+                          </div>
+
+                            <div class="position-relative icon-form-control mb-2">
+                              <i class='fa fa-github position-absolute text-muted'></i>
+                                    @if (@ViewBag.User != null)
+                                    {
+                                        <input name="GitHubLink" value="@ViewBag.User.GitHubLink" placeholder="Add GitHub Link" type="url" class="form-control">
+                                    }
+                                    else
+                                    {
+                                        <input name="GitHubLink" placeholder="Add GitHub Link" type="url" class="form-control">
+                                    }
+                          </div>
+
+                          <div class="position-relative icon-form-control mb-2">
+                              <i class="fa fa-google position-absolute text-muted"></i>
+                                    @if (@ViewBag.User != null)
+                                    {
+                                        <input name="GoogleLink" value="@ViewBag.User.GoogleLink" placeholder="Add Google Link" type="url" class="form-control">
+                                    }
+                                    else
+                                    {
+                                        <input name="GoogleLink" placeholder="Add Google Link" type="url" class="form-control">
+                                    }
+                          </div>
+
+                        </div>
+                     </div>
+                  </div>
+                        </div>
+                </aside>
+                <main class="col-md-8">
+                    <div class="shadow-sm rounded bg-white mb-3">
+                        <div class="box-title border-bottom p-3">
+                            <h4 class="mb-3">Welcome <b>@ViewBag.User.FirstName!</b></h4>
+                            <h6 class="m-0">Edit Basic Info:</h6>
+                            <!-- <p class="mb-0 mt-0 small">Lorem ipsum dolor sit amet, consecteturs.
+                    </p> -->
+                        </div>
+                        <div class="box-body p-3">
+
+                            <div class="row">
+                                <!-- Input -->
+                                <div class="col-sm-6 mb-2">
+                                    <div class="js-form-message">
+                                        <label id="nameLabel" class="form-label">
+                                            Name
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" name="name" value="@ViewBag.User.FirstName @ViewBag.User.LastName" disabled="disabled">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End Input -->
+                                <!-- Input -->
+                                <div class="col-sm-6 mb-2">
+                                    <div class="js-form-message">
+                                        <label id="usernameLabel" class="form-label">
+                                            Username
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-group">
+                                            <input type="text" class="form-control" value="@ViewBag.User.Username" disabled>
+                                             <input type="hidden" name="username" value="@ViewBag.User.Username">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End Input -->
+                            </div>
+                               <div class="row">
+                                <div class="col-sm-6 mb-2">
+                                    <div class="js-form-message">
+                                        <label id="EmailLlbl" class="form-label">
+                                            Email
+                                            <span class="text-danger">*</span>
+                                        </label>
+
+                                        <div class="form-group">
+                                            @if (@ViewBag.User != null)
+                                            {
+                                                <input type="email" name="Email" class="form-control" value="@ViewBag.User.Email" placeholder="Enter your Email" aria-label="Enter your Email" aria-describedby="Emaillbl" data-msg="Please enter your Email." data-error-class="u-has-error" data-success-class="u-has-success">
+                                            }
+                                            else
+                                            {
+                                                <input type="text" name="Email" class="form-control" placeholder="Enter your Email" aria-label="Enter your Email" aria-describedby="Email" data-msg="Please enter your Email." data-error-class="u-has-error" data-success-class="u-has-success">
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                 <div class="col-sm-6 mb-2">
+                                    <div class="js-form-message">
+                                        <label id="ContactLbl" class="form-label">
+                                            Contact
+                                        </label>
+
+                                        <div class="form-group">
+                                            @if (@ViewBag.User.Contact != null)
+                                            {
+                                                <input type="tel" id="contct" name="Contact" class="form-control" value="@ViewBag.User.Contact" placeholder="Enter your Contact" aria-label="Enter your Contact" aria-describedby="Emaillbl" data-msg="Please enter your Contact." data-error-class="u-has-error" data-success-class="u-has-success">
+                                            }
+                                            else
+                                            {
+                                                <input type="tel" id="contct" name="Contact" class="form-control" placeholder="Enter your Contact" aria-label="Enter your Contact" aria-describedby="Contact" data-msg="Please enter your Contact." data-error-class="u-has-error" data-success-class="u-has-success">
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End Input -->
+                            </div>
+                            <div class="row">
+                                <!-- Input -->
+                                <div class="col-md-6 mb-3 mb-sm-6">
+                                    <label class="form-label">
+                                        Birth date
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="js-form-message">
+                                        <div class="form-group">
+                                            @if(ViewBag.User.DOB!= null)
+                                            {
+                                                <input type="date" value="@Convert.ToDateTime(ViewBag.User.DOB).ToString("yyyy-MM-dd")" class="form-control" name="DOB" required>
+                                            }
+                                            else
+                                            {
+                                                 <input type="date" class="form-control" value="yy-mm-dd" name="DOB" required>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3 mb-sm-6">
+                                    <div class="js-form-message">
+                                        <div class="form-group">
+                                            <label class="form-label">Gender</label>
+                                             <span class="text-danger">*</span>
+                                            <select class="form-control custom-select" required="" name="Gender" data-msg="Please select your gender." data-error-class="u-has-error" data-success-class="u-has-success">
+                                                @if (ViewBag.User.Gender != null && ViewBag.User.Gender!="")
+                                                {
+                                                if(@ViewBag.User.Gender=="Male")
+                                                {
+                                                <option value="Male" selected>Male</option>
+                                                <option value="Female">Female</option>
+                                                 <option value="Other">Other</option>
+                                                }
+                                                else if(@ViewBag.User.Gender=="Female")
+                                                {
+                                                <option value="Male">Male</option>
+                                                <option value="Female" selected>Female</option>
+                                                        <option value="Other">Other</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="Male">Male</option>
+                                                        <option value="Female" >Female</option>
+                                                        <option value="Other" selected>Other</option>
+                                                    }
+                                               }
+                                                else
+                                                {
+                                                    <option value="" selected>-- Select Gender --</option>
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                    <option value="Other">Other</option>
+                                                }
+                                              
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End Input -->
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6 mb-2">
+                                    <div class="js-form-message">
+                                        <label id="CityLabel" class="form-label">
+                                            City
+                                            
+                                        </label>
+                                        <div class="form-group">
+                                            @if (@ViewBag.User != null)
+                                            {
+                                                <input type="text" name="City" class="form-control" value="@ViewBag.User.City" placeholder="Enter your City" aria-label="Enter your City" aria-describedby="CityLabel" data-msg="Please enter your City." data-error-class="u-has-error" data-success-class="u-has-success">
+                                            }
+                                            else
+                                            {
+                                                <input type="text" name="City" class="form-control" placeholder="Enter your City" aria-label="Enter your City" aria-describedby="CityLabel" data-msg="Please enter your City." data-error-class="u-has-error" data-success-class="u-has-success">
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End Input -->
+                                <div class="col-sm-6 mb-2">
+                                    <div class="js-form-message">
+                                        <label id="ZipCodelabel" class="form-label">
+                                            Zip Code
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-group">
+                                            @if (@ViewBag.User != null)
+                                            {
+                                                <input type="text" onkeydown="limit(this);" required onkeyup="limit(this);" name="ZipCode" id="zip" data-placement="bottom" title="This field can contain only alpha numeric characters."  class="form-control" value="@ViewBag.User.ZipCode" placeholder="Enter your Zip Code" aria-label="Enter your ZipCode" aria-describedby="ZipCodelabel" data-msg="Please enter your ZipCode." data-error-class="u-has-error" data-success-class="u-has-success">
+                                            }
+                                            else
+                                            {
+                                                <input type="text" onkeydown="limit(this);" required onkeyup="limit(this);" id="zip" data-placement="bottom" name="ZipCode" title="This field can contain only alpha numeric characters." class="form-control" placeholder="Enter your Zip Code" aria-label="Enter your Zip Code" aria-describedby="ZipCodelabel" data-msg="Please enter your Zip Code." data-error-class="u-has-error" data-success-class="u-has-success">
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                             <div class="row">
+                          
+                                 <div class="col-sm-12 mb-2">
+                                 <div class="js-form-message">
+                                    <label id="countrylbl" class="form-label">
+                                    Country
+                                    </label>
+                                     <span class="text-danger">*</span>
+                                    <div class="form-group">
+                                        @if(ViewBag.User!=null)
+                                        {
+                                            @if(ViewBag.User.Country!=null)
+                                            {
+                                                    <select name="Country" class="form-control countrypicker" data-live-search="true" data-default="@ViewBag.User.Country" data-flag="true"></select>
+                                                }
+                                                else
+                                                {
+                                                    <select name="Country" class="form-control countrypicker" data-live-search="true" data-default="United States" data-flag="true"></select>
+                                                }
+                                            }
+                                            else
+                                            {
+                                       <select name="Country" class="form-control countrypicker" data-live-search="true" data-default="United States" data-flag="true"></select>
+                                            }
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                             @if(ViewBag.User!=null)
+                                {
+                                    if (ViewBag.User.Role != 4)
+                                     { 
+                           <div class="row">
+
+                                <!-- Input -->
+                                <div class="col-sm-6 mb-2">
+                                    <div class="js-form-message">
+                                        <label id="organizationLabel" class="form-label">
+                                            Organization
+                                        </label>
+                                        <div class="form-group">
+                                            @if (@ViewBag.User != null)
+                                            {
+                                                <input type="text" class="form-control" name="Organization" value="@ViewBag.User.Organization" placeholder="Enter your organization name" aria-label="Enter your organization name" aria-describedby="organizationLabel" data-msg="Please enter your organization name" data-error-class="u-has-error" data-success-class="u-has-success">
+                                            }
+                                            else
+                                            {
+                                                <input type="text" class="form-control" name="Organization" placeholder="Enter your organization name" aria-label="Enter your organization name" aria-describedby="organizationLabel" data-msg="Please enter your organization name" data-error-class="u-has-error" data-success-class="u-has-success">
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End Input -->
+                                
+                                <!-- Input -->
+                                <div class="col-sm-6 mb-2">
+                                    <div class="js-form-message">
+                                        <label id="websiteLabel" class="form-label">
+                                            Website
+                                          
+                                        </label>
+                                        <div class="form-group">
+                                            @if (@ViewBag.User.Website != null)
+                                            {
+                                                <input class="form-control" name="Website" type="url" value="@ViewBag.User.Website" placeholder="Enter your website" aria-label="Enter your website"  aria-describedby="websiteLabel" data-msg="Password enter a valid website" data-error-class="u-has-error" data-success-class="u-has-success">
+                                            }
+                                            else
+                                            {
+                                                <input class="form-control" name="Website" type="url" placeholder="Enter your website" aria-label="Enter your website" aria-describedby="websiteLabel" data-msg="Password enter a valid website" data-error-class="u-has-error" data-success-class="u-has-success">
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End Input -->
+                            
+                            </div>
+                                  }
+                             }
+                          
+                            <div class="row">
+
+                                <div class="col-sm-12 mb-2">
+                                    <div class="js-form-message">
+                                        <label class="form-label">
+                                            Preferred language
+                                        </label>
+                                        <div class="form-group">
+                                            <select name="Language" class="custom-select">
+                                                @if (ViewBag.User.Language != null && ViewBag.User.Language!="")
+                                                {
+                                                    <option value="@ViewBag.User.Language" selected>@ViewBag.User.Language</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="">-- Select Your Language --</option>
+                                                }
+                                                <option value="English">English</option>
+                                                <option value="Français">Français</option>
+                                                <option value="Deutsch">Deutsch</option>
+                                                <option value="Português">Português</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End Input -->
+                            </div>
+
+                        </div>
+                    </div>
+                    @if(ViewBag.User!=null)
+                    {
+                        if (ViewBag.User.Role != 4)
+                        {
+                            <div class="shadow-sm rounded bg-white mb-3">
+                                <div class="box-title border-bottom p-3">
+                                    <h6 class="m-0">
+                                        Experience
+                                    </h6>
+                                    <p class="mb-0 mt-0 small">
+                                        Tell about your work, job, and other experiences.
+                                    </p>
+                                </div>
+                                <div class="box-body px-3 pt-3 pb-0">
+                                    <div class="row">
+                                        <div class="col-sm-6 mb-4">
+                                            <label id="FROM" class="form-label">FROM</label>
+                                            <!-- Input -->
+                                    <div class="input-group">
+                                                @if (ViewBag.User.Experience_From != null)
+                                                {
+                                                    <input type="date" value="@Convert.ToDateTime(ViewBag.User.Experience_From).ToString("yyyy-MM-dd")" class="form-control" name="Experience_From">
+                                                }
+                                                else
+                                                {
+                                                    <input type="date" class="form-control" value="yy-mm-dd" name="Experience_From">
+                                                }
+                                            </div>
+                                            <!-- End Input -->
+                                </div>
+                                        <div class="col-sm-6 mb-4">
+                                            <label id="TO" class="form-label">TO</label>
+                                            <!-- Input -->
+                                    <div class="input-group">
+                                                @if (ViewBag.User.Experience_To != null)
+                                                {
+                                                    <input type="date" value="@Convert.ToDateTime(ViewBag.User.Experience_To).ToString("yyyy-MM-dd")" class="form-control" name="Experience_To">
+                                                }
+                                                else
+                                                {
+                                                    <input type="date" class="form-control" value="yy-mm-dd" name="Experience_To">
+                                                }
+                                            </div>
+                                            <!-- End Input -->
+                                </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6 mb-4">
+                                            <label id="companyLabel" class="form-label">Company</label>
+                                            <!-- Input -->
+                                    <div class="input-group">
+                                                @if (@ViewBag.User != null)
+                                                {
+                                                    <input type="text" class="form-control" name="Company" value="@ViewBag.User.Company" placeholder="Enter your company title" aria-label="Enter your company title" aria-describedby="companyLabel">
+                                                }
+                                                else
+                                                {
+                                                    <input type="text" class="form-control" name="Company" placeholder="Enter your company title" aria-label="Enter your company title" aria-describedby="companyLabel">
+                                                }
+                                            </div>
+                                            <!-- End Input -->
+                                </div>
+                                        <div class="col-sm-6 mb-4">
+                                            <label id="positionLabel" class="form-label">Position</label>
+                                            <!-- Input -->
+                                    <div class="input-group">
+                                                @if (@ViewBag.User.Position != null)
+                                                {
+                                                    <input type="text" class="form-control" name="Position" value="@ViewBag.User.Position" placeholder="Enter your position" aria-label="Enter your position" aria-describedby="positionLabel">
+                                                }
+                                                else
+                                                {
+                                                    <input type="text" class="form-control" name="Position" placeholder="Enter your position" aria-label="Enter your position" aria-describedby="positionLabel">
+                                                }
+                                            </div>
+                                            <!-- End Input -->
+                                </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+
+
+                    <div class="panel p-20 m-10">
+
+<div class="shadow-sm rounded bg-white mb-3">
+     <div class="box-title border-bottom p-3">
+                                    <h6 class="m-0">
+                                        Referred Users
+                                    </h6>
+                                </div>
+    <div class="box-body px-3 pt-3 pb-0">
+    <div class="table-responsive table-lg">
+        <table class="table text-md-nowrap table-striped table-bordered text-center no-footer" id="userTable">
+            <thead class="bg-indigo-800">
+                <tr>
+                    <th class="text-bold" hidden>...</th>
+                    <th class="text-bold text-center" style="min-width:140px;">
+                        FirstName
+                    </th>
+                    <th class="text-bold text-center" style="min-width:140px;">
+                        LastName
+                    </th>
+                     <th class="text-bold text-center" style="min-width:150px;">
+                        Refferal Type
+                    </th>
+                    <th class="text-bold text-center" style="min-width:140px;">
+                        UserType
+                    </th>
+                    <th class="text-bold text-center" style="min-width:150px;">
+                        Email
+                    </th>
+                     <th class="text-bold text-center" style="min-width:150px;">
+                        Username
+                    </th>
+                   
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+</div>
+</div>
+                    @if (ViewBag.User.IsActive == 2 || ViewBag.User.IsActive == 1 )
+                    {
+                        <div class="mb-3 text-right">
+                            <input type="hidden" name="UpdatedAt" value="@DateTime.Now" />
+                            <input type="hidden" name="pcount" id="cnt"/> 
+                            <button type="submit" class="btn btn-success">Update</button>
+                        </div>
+                    }
+                </main>
+
+            </div>
+        </div>
+
+
+
+        <!-- Message modal show -->
+        <!-- Modal -->
+        <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-danger" id="exampleModalLabel">Note:</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Your Profile is under Review. We will send you an email once it is approved.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="modal fade" id="messagemodal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 style="margin-left:95px;font-weight:bold;" class="modal-title text-danger" id="exampleModalLabel">Account Activation Required</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Please activate your account to make changes to your record!</p>
+                        <p>Kindly check your email.</p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success" data-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Modal -->
+
+    </div>
+</form>
+
+
+<script src="http://www.datejs.com/build/date.js" type="text/javascript"></script>
+<script>
+    function myFunction() {
+        $("#stat").val(1);
+        var x = document.getElementById("status");
+        if (x.innerHTML === "Online") {
+             $("#stat").val(0);
+            x.innerHTML = "Offline";
+        } else {
+             $("#stat").val(1);
+            x.innerHTML = "Online";
+
+        }
+        var stat= $('#stat').val();
+         $.ajax({
+                    type: 'POST',
+                    url: "../Ajax/StatusUpdate",
+                    dataType: "json",
+                    data:{
+                        id: @ViewBag.User.Id, val: stat
+                    },
+                    success: function (response) {
+                       if(response)
+                       {
+
+                       }
+                    },
+                    error: function(response)
+                    {
+                        alert('Something went wrong');
+                    }
+         });
+
+    }
+
+    $('#tag1').tagsinput({
+  maxTags: 7
+        });
+
+   $('#tag2').tagsinput({
+  maxTags: 5
+        });
+         
+        function showDiv() {
+             document.getElementById('myDIV2').style.display = "none";
+             document.getElementById('myDIV').style.display = "block";
+             
+             $('#ins').attr('required', 'true');
+             $('#dn').attr('required', 'true');
+             $('#sd').attr('required', 'true');
+             $('#ed').attr('required', 'true');
+
+                     }
+         function hideDiv() {
+           
+
+             $('#ins').attr('required',false);
+             $('#dn').attr('required',false);
+             $('#sd').attr('required',false);
+             $('#ed').attr('required',false);
+             if(document.getElementById('myDIV').style.display == "block")
+             {
+             document.getElementById('myDIV').style.display = "none";
+             }
+             if(document.getElementById('myDIV2').style.display == "block")
+             {
+             document.getElementById('myDIV2').style.display = "none";
+             }
+              document.getElementById('ErrorMsg').style.display = "none";
+             
+                     }
+         
+         var PCount= 1;
+         var chkarr=[];
+        
+
+         function fieldShow()
+         { 
+             var ins= document.getElementById('ins').value;
+             var dn= document.getElementById('dn').value;
+             var sd=  new Date(document.getElementById('sd').value);
+             var sd1= document.getElementById('sd').value;
+             sd= sd.toLocaleDateString();
+             var ed= new Date(document.getElementById('ed').value);
+             ed=ed.toLocaleDateString();
+             var ed1= document.getElementById('ed').value;
+             var edu =document.getElementById('EduInfo');
+             var cnt= document.getElementById('cnt');
+             
+         if( (ins != "" && dn!="" && sd1!="" && ed1!=""))
+           {
+             if(!chkarr.includes(dn) && !chkarr.includes(sd) )
+             {
+              var guestDiv = document.createElement("div");
+             
+              guestDiv.setAttribute("class", "col-md-10 pbox removeclass" + PCount);
+              
+              var removeGuestDiv = 'removeclass' + PCount;
+              chkarr.push(ins,dn,sd,ed);
+              
+              var txt5=  "<br/><span class='text-muted'>"+ sd + "&nbsp;To&nbsp;" + ed + '</span>&nbsp;'+ '<button type="button" style="background:transparent;border:none;" onclick="deleteDiv('+ PCount+ ')">'+'<i class="fa fa-window-close bg-white" aria-hidden="true">'+'</i>'+ '</button>'+  '<br/><br/>' + '<input type="hidden" id="degn-' + PCount + '" name="degname' + PCount + '" value="'+dn+'">' + '<input type="hidden" id="insn-' + PCount + '" name="insname' + PCount + '" value="'+ins+'">' + '<input type="hidden" id="sdn-' + PCount + '" name="sd' + PCount + '" value="'+sd+'">'+ '<input type="hidden" id="edn-' + PCount + '" name="ed' + PCount + '" value="'+ed+'">'+  '<p >'+ dn + '-' + ins +  '</p>';
+              guestDiv.innerHTML= txt5;
+              edu.appendChild(guestDiv);
+              PCount++;
+              cnt.value= PCount;
+             document.getElementById('ErrorMsg').style.display = "none";
+             document.getElementById('ins').value="";
+             document.getElementById('dn').value="";
+             document.getElementById('sd').value="";
+             document.getElementById('ed').value="";
+             hideDiv();
+             
+             }
+             else
+             {
+                  document.getElementById('ErrorMsg').style.display = "block";
+                  document.getElementById('ErrorMsg').className="text-danger ml-4";
+                  document.getElementById('ErrorMsg').innerHTML="Starting Date or Degree Name Already Exsist!";
+             }
+           }
+            else
+              {
+                  document.getElementById('ErrorMsg').style.display = "block";
+                  document.getElementById('ErrorMsg').className="text-danger ml-4";
+                  document.getElementById('ErrorMsg').innerHTML="Please fill all the fields!";
+              }
+         }
+
+
+         function deleteDiv(del)
+         { 
+             var values=[];
+            
+             var ins= $("#ins"+del).val();
+             var dn= $("#dn"+del).val();
+             var sd= $("#sd"+del).val();
+             var ed= $("#ed"+del).val();
+             values.push(ins,dn,sd,ed);
+             for(let i=0;i<4;i++)
+             {
+                 var index= values.indexOf(values[i]);
+                 chkarr.splice(index,1);
+             }
+             $("#degn-"+del).remove();
+             $("#insn-"+del).remove();
+             $("#sdn-"+del).remove();
+             $("#edn-"+del).remove();
+             $(".removeclass"+del).remove();
+            
+         }
+
+
+      var max_chars = 6;
+
+$('#zip').keydown( function(e){
+    if ($(this).val().length >= max_chars) { 
+        $(this).val($(this).val().substr(0, max_chars));
+    }
+});
+
+$('input[type=text]').keyup(function() {
+  if (this.value.match(/[^a-zA-Z0-9 ]/g)) {
+    this.value = this.value.replace(/[^a-zA-Z0-9 ]/g, '');
+  } 
+});
+
+$('input[type=text]').focusout(function() {
+  this.value = this.value.trim();
+});
+
+  
+
+ 
+function deledu(id)
+{
+     $.ajax({
+                    type: 'POST',
+                    url: "../Ajax/DeleteEducation",
+                    dataType: "json",
+                    data:{
+                        id: id
+                    },
+                    success: function (response) {
+                       if(response)
+                       {
+                           $('#dig-'+id).remove();
+
+                       }
+                    },
+                    error: function(response)
+                    {
+                        alert('Something went wrong');
+                    }
+         });
+
+}
+$('#contct').keyup(function(e)
+                                {
+  if (/\D/g.test(this.value))
+  {
+    // Filter non-digits from input value.
+    this.value = this.value.replace(/\D/g, '');
+  }
+});
+
+function limitText(limitField, limitNum) {
+    if (limitField.value.length > limitNum) {
+        limitField.value = limitField.value.substring(0, limitNum);
+    }
+}
+ var val_id=0;
+function editfun(id)
+{
+     document.getElementById('myDIV').style.display = "none";
+     document.getElementById('myDIV2').style.display = "block";
+     
+     var inst= $('#insti-'+id).text();
+     inst= inst.split(":");
+     inst= inst[1].trim();
+     
+     var deg= $('#degree-'+id).text();
+     deg= deg.split(":");
+     deg= deg[1].trim();
+     
+     var dura = $('#duration-'+id).text();
+     dura= dura.split(":");
+     dura= dura[1].split("To");
+     
+    
+     var start= dura[0];
+    
+     var end= dura[1];
+      
+      const [day, month, year] = start.split('-');
+
+      start = [year, month, day].join('-').replace(/ /g,'');
+      
+      
+      const [d, m, y] = end.split('-');
+      end = [y, m, d].join('-').replace(/ /g,'');
+      
+      
+     $('#insti1').val(inst);
+     $('#degree1').val(deg);
+     $('#start1').val(start);
+     $('#end1').val(end);
+     
+     val_id= $('#funval-'+id).val();
+   
+
+}
+ $('#Upbtn').on('click',function(){
+            fun(val_id);
+        });
+
+      
+
+
+</script>
+
+
+<script>
+    function fun(id)
+{
+
+
+     var a= $('#insti1').val().trim();
+     var b= $('#degree1').val().trim();
+     
+     var c= $('#start1').val().trim();
+    
+     var d= $('#end1').val().trim();
+    
+
+          $.ajax({
+                    type: 'POST',
+                    url: "../Ajax/UpdateEducation",
+                    dataType: "json",
+                    data:{
+                        id: id, ins:a , deg:b, sd:c, ed:d
+                    },
+                    success: function (response) {
+                       if(response)
+                       {
+                           
+                           var txt= "<p style='float:right; margin-right:10px;'><span><button type='button' class='btn fa fa-pencil mb-1' onclick='editfun("+id+")'>"+"</button>"+"</span>"+" <span><button type='button' class='btn fa fa-trash mb-1' onclick='deledu("+id+")'>"+"</button></p>"+ "<br/><span id='degree-'"+id+">"+"Degree :&nbsp;"+b + "</span>"+"<br/><br/>"+"<p id='insti-'"+id+">"+"Institute:&nbsp;"+ a + "</p>"+"</span>"+
+                                    "<p id='duration-'"+id+" class='text-muted'>"+"Duration : "+c+" To "+d+"</p>";
+                           $('#dig-'+id).html(txt);
+
+                       }
+                    },
+                    error: function(response)
+                    {
+                        alert('Something went wrong');
+                    }
+         });
+}
+</script>
+
+
+<script>
+
+    loadTable();
+    function loadTable(Name, email)
+    {
+        $('#userTable').DataTable(
+        {
+            "ajax":
+            {
+                "url": '@Url.Action("GetUserRefferal", "Ajax")',
+                "type": "POST",
+                "datatype": "json",
+                "data": {
+                    Name: Name,
+                    email: email,                   
+                }
+            },
+            'columns':
+            [
+                { "data": "hidden", "name": "0" },
+                { "data": "firstName", "name": "FirstName" },
+                { "data": "lastName", "name": "LastName" },
+                { "data": "userName", "name": "Username" },
+                { "data": "role", "name": "Role" },
+                { "data": "email", "name": "Email" },
+               
+            ],
+            'columnDefs':
+            [
+                {
+                    "targets": 0,
+                    "visible": false,
+                    "searchable": false,
+                    "render": function (data, type, full, meta) {
+                        return null;
+                    }
+                },
+                {
+                    "targets": 1,
+                    'className': '',
+                    "render": function (data, type, full, meta)
+                    {
+                        return full.firstName ;
+                    }
+                },
+                {
+                    "targets": 2,
+                    'className': '',
+                    "render": function (data, type, full, meta)
+                    {
+                        return full.lastName;
+                    }
+                },
+                {
+                    "targets": 3,
+                    'className': '',
+                    "render": function (data, type, full, meta) {
+                         if(full.isActive==1)
+                         {
+                         return "Connect";
+                         }
+                         else
+                         {
+                             return "Signup";
+                         }
+                    }
+                },
+                {
+                    "targets": 4,
+                    'className': '',
+                    "render": function (data, type, full, meta) {
+                        
+                        
+                        if(full.role==3)
+                        {
+                        return "Seller";
+                        }
+                        else
+                        {
+                          return "Buyer";
+                        }
+                        
+                    }
+                },
+                {
+                    "targets": 5,
+                    'className': '',
+                     "render": function (data, type, full, meta) {
+                       
+                         return full.email;
+                    }
+                },
+                 {
+                   "targets": 6,
+                    'className': '',
+                     "render": function (data, type, full, meta) {
+                       
+                       return full.userName;
+                    }
+                },
+            ],
+            "serverSide": "true",
+            "processing": "true",
+            "lengthChange": false,
+            "language":
+            {
+                "processing": "<i class='icon-spinner spinner icon-2x'></i>",
+                "search": "<span>Search :</span> _INPUT_",
+                "searchPlaceholder": "Filter Data",
+                "paginate": { 'first': 'First', 'last': 'Last', 'next': '&rarr;', 'previous': '&larr;' }
+            }
+        });
+    }
+</script>

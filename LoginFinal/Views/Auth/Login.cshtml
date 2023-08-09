@@ -1,0 +1,48 @@
+﻿
+@{
+    ViewData["Title"] = " Login";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
+
+<!-- Login -->
+<div class="bg-white">
+    <div class="container">
+        <div class="row justify-content-center align-items-center d-flex vh-100">
+            <div class="col-lg-4 mx-auto">
+                <div class="osahan-login py-4">
+                    <div class="text-center mb-4">
+                        <a href="@Url.Action("Index","Home")"><img src="~/FrontAssets/images/fav.svg" alt=""></a>
+                        <h5 class="font-weight-bold mt-3">Welcome To AI Health Link</h5>
+                        <p class="text-muted">Don't miss your next opportunity. Sign in to stay updated on your professional world.</p>
+                    </div>
+                    <form action="@Url.Action("PostLogin","Auth")" method="post">
+                        <div class="form-group">
+                            <label class="mb-1">Email or username</label>
+                            <div class="position-relative icon-form-control">
+                                <i class="mdi mdi-account position-absolute"></i>
+                                <input type="text" name="Email" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="mb-1">Password</label>
+                            <div class="position-relative icon-form-control">
+                                <i class="mdi mdi-key-variant position-absolute"></i>
+                                <input type="password" name="Password" class="form-control" required>
+                            </div>
+                        </div>
+                        @if(ViewBag.Message != null || ViewBag.Message != "")
+                        {
+                                <span class="Bold" style="color:@ViewBag.Color">@ViewBag.Message</span>
+                        }
+                        <button class="btn btn-success btn-block text-uppercase" type="submit"> Sign in </button>
+                        <div class="py-3 d-flex align-item-center">
+                            <a href="@Url.Action("ForgotPassword","Auth")">Forgot password?</a>
+                            <span class="ml-auto"> New to AI Health? <a href="@Url.Action("Register","Home", new { value = "Buyer"})">Join now</a></span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Login -->

@@ -1,0 +1,525 @@
+﻿@using LoginFinal.HelpingClasses
+@inject GeneralPurpose gp
+@{
+    ViewData["Title"] = "Messages";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+    User loggedinUser = gp.ValidateLoggedinUser();
+   
+}
+
+<head>
+    <style>
+        .butn {
+    background-color: #bbb;
+    margin: 4px 0px;
+    width: 100%;
+    box-sizing: border-box;
+}
+    </style>
+</head>
+        <input type="hidden" id="sndid" value="@ViewBag.SenderId"/>
+        <input type="hidden" id="recid" value=""/>
+        
+              <div class="py-5">
+         <div class="container">
+            <div class="row">
+               <!-- Main Content -->
+               <main class="col order-xl-2 col-lg-12 col-md-12 col-sm-12 col-12">
+                  <div class="box shadow-sm rounded bg-white mb-3 osahan-chat">
+                     <h5 class="pl-3 pt-3 pr-3 border-bottom mb-0 pb-3">Messaging</h5>
+                   
+                     <div class="row m-0">
+
+                        <div class="border-right col-lg-5 col-xl-4 px-0">
+                           <div class="osahan-chat-left">
+                              <div class="position-relative icon-form-control p-3 border-bottom">
+                                 <i class="fa fa-search position-absolute"></i>
+                                 <input placeholder="Search Contact" id="searchName" onkeyup="searchTable()" type="text" class="form-control">
+                              </div>
+
+           
+                              <!---Sidebar Chat List-->
+                              <div  class="osahan-chat-list">
+                                 
+                                        <div id="othermsg">
+                                       
+                                   </div>
+                             </div>
+                             <!---Sidebar Chat List-->
+                        </div>
+
+                        </div>
+
+                        
+                      
+                        <div class="col-lg-7 col-xl-8 px-0">
+                           
+                              
+                            <!---Name Navbar-->
+                            <div class="p-3 d-flex align-items-center border-bottom osahan-post-header">
+                              <div class="font-weight-bold mr-1 overflow-hidden">
+                                
+                                  
+                                  <div class="text-truncate" id="navname">
+                                      
+                                 </div>
+
+                              </div>
+                           </div>
+
+                            <!---Name Navbar-->
+                           
+
+
+                            <!---Chat Box-->
+                           <div id="scrldn" class="osahan-chat-box p-3 border-top border-bottom bg-light">
+                            
+                                        
+                                    
+                                     <div class="msg21">
+
+                                            </div>
+                           </div>
+
+                           <!---Chat Box-->
+
+
+                    <form id="message-form">
+                           <!---Message Area-->
+                           <div class="w-100 border-top border-bottom">
+                              <textarea id="messageInput" placeholder="Write a message…" class="form-control border-0 p-3 shadow-none" rows="2"></textarea>
+                           </div>
+                           <!---Message Area-->
+                           
+                           
+                           <!---Send and other buttons-->
+                           <div class="p-3 d-flex align-items-center">
+                       
+                               <div class="d-flex align-items-center">
+                              <div class="overflow-hidden">
+                                 <button type="button" class="btn btn-light btn-sm rounded" data-toggle="modal" data-target="#customer-order">
+                                 <i class="mdi mdi-coin md-24"><span style="padding-left:5px;">Create an offer</span></i>
+                                 </button>
+                              </div>
+                           </div>
+                               <span class="ml-auto">
+
+                              <button type="submit" id="sendButton" class="btn btn-success btn-sm rounded">
+                              <i class="mdi mdi-send"></i> Send
+                              </button>
+                              </span>
+
+
+                           </div>
+                           <!---Send and other buttons-->
+                  </form>
+                        </div>
+
+
+                     </div>
+            
+                  </div>
+
+               </main>
+
+            </div>
+         </div>
+      </div>
+ 
+ 
+
+ <div class="container">
+  <!-- Modal -->
+  <div class="modal fade" id="customer-order" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+           <div class="modal-header px-4">
+             <h5 class="font-weight-bold">Create an Offer</h5>
+             <button type="button" class="close" data-dismiss="modal">&times;</button>
+           </div>
+        <div class="modal-body">
+              <div class="col-lg-12">
+                  <div class="bg-white  sidebar-page-right">
+                     <div class="bg-white rounded p-0">
+                        <div class="border-bottom p-3">
+                           <label>Describe the services you're going to deliver - please be as detailed as possible:</label>
+                           <form>
+                              <div class="form-group">
+                                 <textarea class="form-control" id="exampleFormControlTextarea1" rows="5" placeholder="I'm looking for..."></textarea>
+                              </div>
+                           </form>
+                        </div>
+                        <div class="border-bottom p-3">
+                           <label>Once you place your order, when would you like your service delivered?</label>
+                           <div class="row">
+                              <div class="form-group col-md-12">
+                                 <select id="inputState" class="form-control" style="width:100% !important;">
+                                    <option selected>Select Delivery Time</option>
+                                    <option>1 Day</option>
+                                    <option>2 Days</option>
+                                    <option>3 Days</option>
+                                    <option>4 Days</option>
+                                    <option>5 Days</option>
+                                    <option>6 Days</option>
+                                    <option>8 Days</option>
+                                    <option>9 Days</option>
+                                    <option>10 Days</option>
+                                 </select>
+                              </div>
+                        </div>
+                       </div>
+                        <div class="p-3">
+                           <label>What is your budget for this service?</label>
+                           <div class="input-group mb-2 col-md-12 p-0">
+                              <div class="input-group-prepend">
+                                 <div class="btn btn-success">$</div>
+                              </div>
+                              <input type="number" class="form-control" id="inlineFormInputGroup">
+                           </div>
+                        </div>
+                        <div class="p-3 d-flex justify-content-end">
+                           <a href="#" id="subOrder" class="btn btn-success btn-lg font-weight-bold">Submit Request</a>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/@@aspnet/signalr@@1.0.0-rc1-final/dist/browser/signalr.js"></script>
+<script>
+
+      function searchTable()
+    {
+        var name = $('#searchName').val(); 
+         
+      
+        $('#othermsg').html("");
+        GetChatList(name);
+    }
+
+    
+    var LoggedinId = @loggedinUser.Id;
+    var sndid= $('#sndid').val();
+    var recid= '';
+    var curr= '';
+    var strt=0;
+
+    var messageForm =  document.getElementById('message-form');
+    var messageBox = document.getElementById('messageInput');
+    var img= '';
+  
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/chat")
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+
+        
+
+    connection.on('newMessage', (sender, messageText,reciever,imgt) => {
+          if(reciever==LoggedinId)
+    {   
+        recid=reciever;
+        if(LoggedinId!=reciever)
+        {
+          img=  '<div class="dropdown-list-image mr-3"><img id="curimg" class="rounded-circle" src="/'+"@loggedinUser.ImagePath"+'" onerror="this.onerror=null; this.src='+"'/FrontAssets/images/user/s4.png'"+';" alt=""></div>';
+        }
+        else
+        {
+            img=  '<div class="dropdown-list-image mr-3"><img id="curimg1" class="rounded-circle" src="/'+imgt+'" onerror="this.onerror=null; this.src='+"'/FrontAssets/images/user/s4.png'"+';" alt=""></div>';
+        }
+       
+
+        var timenow= Date.parse("@DateTime.Now").toLocaleTimeString();
+        console.log(`${sender}:${messageText}`);
+          var avatarchat= 
+                              '<div class="d-flex align-items-center osahan-post-header">'+
+
+                                 img+
+                                 '<div class="mr-1">'+
+                                    '<div class="text-truncate h6 mb-3" class="gtn">'+`${sender}`
+                                    +'</div>'+
+                                    '<p id="msgl">'+`${messageText}`+ '</p>'+
+                                 '</div>'+
+                                 '<span class="ml-auto mb-auto">'+
+                                    '<div class="text-right text-muted pt-1 small" class="msgtime">'+timenow+'</div>'+
+                                 '</span>'+
+                              '</div>';
+
+                            
+                               var guestdiv= document.createElement('div');
+                               guestdiv.setAttribute("class","guestdiv");
+                               guestdiv.innerHTML= avatarchat;
+
+                               $('.msg21').append(guestdiv);
+                                $('#abc'+curr).html("");
+                                $('#abc'+curr).html(`<i class="mdi mdi-check text-primary ml-2"></i>${sender}: ${messageText}`);
+                            }  
+                              $("#scrldn").scrollTop( $("#scrldn").prop('scrollHeight') - $("#scrldn").outerHeight() );
+                         });
+                   
+    connection.start()
+        .then(() => console.log('connected!'))
+        .catch(console.error);
+        
+     
+    messageForm.addEventListener('submit', ev => {
+        ev.preventDefault();
+        
+        const message = messageBox.value;
+        recid=$('#recid').val();
+        if(message!=null && message!="")
+        {
+        connection.invoke('SendMessage',"@loggedinUser.FirstName @loggedinUser.LastName", message,sndid,$('#recid').val());
+        }
+        if(LoggedinId==sndid && recid!='' && message!=null && message!="")
+        {
+            var dtn= Date.parse("@DateTime.Now").toLocaleTimeString();
+            var img=  '<div class="dropdown-list-image mr-3 mb-auto"><img id="curimg" class="rounded-circle" src="/'+"@loggedinUser.ImagePath"+'" onerror="this.onerror=null; this.src='+"'/FrontAssets/images/user/s4.png'"+';" alt=""></div>';
+          var avatarchat= 
+                              '<div class="d-flex align-items-center osahan-post-header">'+
+
+                                 img+
+                                 '<div class="mr-1">'+
+                                    '<div class="text-truncate h6 mb-3" class="gtn">'+`${"@loggedinUser.FirstName @loggedinUser.LastName"}`
+                                    +'</div>'+
+                                    '<p id="msgl">'+`${message}`+ '</p>'+
+                                 '</div>'+
+                                 '<span class="ml-auto mb-auto">'+
+                                    '<div class="text-right text-muted pt-1 small" class="msgtime">'+dtn+'</div>'+
+                                 '</span>'+
+                              '</div>';
+
+                            
+                               var guestdiv= document.createElement('div');
+                               guestdiv.setAttribute("class","guestdiv");
+                               guestdiv.innerHTML= avatarchat;
+
+                               $('.msg21').append(guestdiv);
+
+                               $('#abc'+curr).html("");
+                                $('#abc'+curr).html("<i class='mdi mdi-check text-primary'></i>"+`${"@loggedinUser.FirstName @loggedinUser.LastName"}: ${message}`);
+                            
+         }
+        messageBox.value = '';
+        
+
+    });
+
+
+      $("#messageInput").keydown(function(event){
+    if(event.keyCode == 13){
+        $("#sendButton").click();
+         $("#scrldn").scrollTop( $("#scrldn").prop('scrollHeight') - $("#scrldn").outerHeight() );
+         $("#messageInput").val("");
+    }
+      
+});
+
+
+//Offer Created in Message
+$('#subOrder').click(function(){
+
+
+});
+function GetChat(id)
+{
+    //$('#readm').html("");
+    //GetChatList();
+     $('.msg21').html("");
+     $('#recid').val(id);
+
+      $('#navname').html("");
+     recid= $('#recid').val();
+     curr= id;
+     $.ajax({
+                    type: 'POST',
+                    url: "../Ajax/GetAllChats",
+                    dataType: "json",
+                    data:{
+                        recieverid :id
+                    },
+                    success: function (response) {
+                       console.log(response);
+                      
+                    
+    for(let i=0; i<response.length;i++)
+    {
+
+    
+  
+   
+    response[i].CreatedAt= new Date(response[i].CreatedAt).toLocaleTimeString();
+    console.log(response[i].Message_Description);
+    
+      var avatarchat2= 
+                              '<div class="d-flex align-items-center osahan-post-header">'+
+                                 '<div class="dropdown-list-image mr-3 mb-auto"><img class="rounded-circle" src="/'+response[i].Users.ImagePath+'" onerror="this.onerror=null; this.src='+"'/FrontAssets/images/user/s4.png'"+';"  alt=""></div>'+
+                                 '<div class="mr-1">'+
+                                    '<div class="text-truncate h6 mb-3" class="getNAme">'+`${response[i].Users.FirstName} ${response[i].Users.LastName}`
+                                    +'</div>'+
+                                    '<p id="messagesList">'+`${response[i].Message_Description}`+ '</p>'+
+                                 '</div>'+
+                                 '<span class="ml-auto mb-auto">'+
+                                    '<div class="text-right text-muted pt-1 small" class="msgtime">'+response[i].CreatedAt+'</div>'+
+                                 '</span>'+
+                              '</div>';
+                              
+                            if((response[i].Users.Id==LoggedinId || response[i].RecieverEnd.Id==LoggedinId) && (response[i].Users.Id==id || response[i].RecieverEnd.Id==id))
+                              {
+                                 
+                               var guestdiv= document.createElement('div');
+                               guestdiv.setAttribute("class","guestdiv");
+                               guestdiv.innerHTML= avatarchat2;
+
+                               $('.msg21').append(guestdiv);
+                               
+                               if($('#navname').text()=="" && response[i].Users.Id==LoggedinId)
+                               {
+                                   $('#navname').text(response[i].RecieverEnd.FirstName+" "+response[i].RecieverEnd.LastName);
+                               }
+                               else if($('#navname').text()=="" && response[i].RecieverEnd.Id==LoggedinId)
+                               {
+                                    $('#navname').text(response[i].Users.FirstName+" "+response[i].Users.LastName);
+                               }
+
+                               if(response[i].SenderId!=LoggedinId)
+                               {
+                                $('#crat'+response[i].SenderId).html(response[i].CreatedAt);
+                                $('#abc'+response[i].SenderId).html(`<i class="mdi mdi-check text-primary ml-2"></i>${response[i].Users.FirstName}: ${response[i].Message_Description}`);
+                               }
+                               else
+                               {
+                                $('#crat'+response[i].RecieverId).html(response[i].CreatedAt);
+                                $('#abc'+response[i].RecieverId).html(`<i class="mdi mdi-check text-primary ml-2"></i>${response[i].Users.FirstName}: ${response[i].Message_Description}`);
+                               }
+                              }
+                             
+                              
+                   
+    }
+      $("#scrldn").scrollTop( $("#scrldn").prop('scrollHeight') - $("#scrldn").outerHeight() );          
+},
+error: function()
+{
+    alert('Ajax not working');
+}
+});
+}
+
+
+//Chat List on the base of SenderId 
+function GetChatList(Name)
+{
+    var chklist=[];
+    
+    $('#othermsg').html("");
+     $.ajax({
+                    type: 'POST',
+                    url: "../Ajax/GetChatList",
+                    data:{Name : Name},
+                    dataType: "json",                 
+                    success: function (response) {
+                        
+                        
+                                            for(let i=0; i<response.length;i++)
+                                            {
+                                                var tm= new Date(response[i].CreatedAt).toLocaleTimeString();
+                                                    
+                                                   
+                                                    var listitem= '<button id="rec'+i+'" type="button" class="btn butn" style="text-decoration:none;background:transparent;" onclick="GetChat('+response[i].Users.Id+')">'+ 
+                                                               '<div class="p-3 d-flex align-items-center border-bottom osahan-post-header">'+ 
+                                                                '<div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/'+response[i].Users.ImagePath+'" onerror="this.onerror=null; this.src='+"'/FrontAssets/images/user/s4.png'"+';" alt=""></div>'+
+                                                                '<div class="font-weight-bold mr-1 overflow-hidden">'+
+                                                                   '<div id="nm'+response[i].Users.Id+'" class="text-truncate">'+response[i].Users.FirstName+' '+response[i].Users.LastName+'</div>'+
+                                                                   '<div id="abc'+response[i].Users.Id+'" class="text-truncate overflow-hidden text-black-50"><i class="mdi mdi-check text-primary ml-2"></i>'+response[i].Message_Description+'</div>'+
+                                                                '</div>'+
+                                                                '<span class="ml-auto mb-auto">'+
+                                                                   '<div id="crat'+response[i].Users.Id+'" class="text-right text-muted pt-1 small">'+tm+''+'</div>'+
+                                                                '</span>'+
+                                                                '</div>'
+                                                                 +'</button>';
+                                                   
+
+                                                     if((response[i].SenderId==LoggedinId || response[i].RecieverId==LoggedinId))
+                                                          {
+                                                              if(!chklist.includes(response[i].SenderId) && !chklist.includes(response[i].RecieverEnd.Id) && response[i].SenderId!=LoggedinId)
+                                                              {
+
+                                                               var guestdiv= document.createElement('div');
+                                                               guestdiv.setAttribute("class","listdiv"+i);
+                                                               guestdiv.innerHTML= listitem;
+                                                               $('#othermsg').append(guestdiv);
+                                                               chklist.push(response[i].SenderId);
+                                                              }
+                                                              else
+                                                              {
+                                                               var listitem2= '<button id="rec'+i+'" type="button" class="btn butn" style="text-decoration:none;background:transparent;" onclick="GetChat('+response[i].RecieverEnd.Id+')">'+
+                                                               '<div class="p-3 d-flex align-items-center border-bottom osahan-post-header">'+ 
+                                                                '<div class="dropdown-list-image mr-3"><img class="rounded-circle" src="/'+response[i].RecieverEnd.ImagePath+'" onerror="this.onerror=null; this.src='+"'/FrontAssets/images/user/s4.png'"+';" alt=""></div>'+
+                                                                '<div class="font-weight-bold mr-1 overflow-hidden">'+
+                                                                   '<div id="nm'+response[i].RecieverEnd.Id+'" class="text-truncate">'+response[i].RecieverEnd.FirstName+' '+response[i].RecieverEnd.LastName+'</div>'+
+                                                                   '<div id="abc'+response[i].RecieverEnd.Id+'" class="text-truncate overflow-hidden text-black-50"><i class="mdi mdi-check text-primary ml-2"></i>'+response[i].Message_Description+'</div>'+
+                                                                '</div>'+
+                                                                '<span class="ml-auto mb-auto">'+
+                                                                   '<div id="crat'+response[i].RecieverEnd.Id+'" class="text-right text-muted pt-1 small">'+tm+''+'</div>'+
+                                                                '</span>'+
+                                                                '</div>'
+                                                                 +'</button>';
+                                                                      
+                                                                     if((response[i].SenderId==LoggedinId || response[i].RecieverId==LoggedinId) && response[i].RecieverId!=LoggedinId)
+                                                                  {
+                                                                      if(!chklist.includes(response[i].RecieverId) && !chklist.includes(response[i].SenderId))
+                                                                      {
+                                                                       var guestdiv= document.createElement('div');
+                                                                       guestdiv.setAttribute("class","listdiv"+i);
+                                                                       guestdiv.innerHTML= listitem2;
+                                                                       $('#othermsg').append(guestdiv);
+                                                                       chklist.push(response[i].RecieverId);
+                                                                      
+                                                                      }
+                                                                  
+                                                                  }
+                                                                    
+                                                              }
+                                                             
+                                                          
+                                                          } 
+                                                 
+                                             }
+                                             if(strt==0)
+                                             {
+                                                 $('#rec0').click();
+                                                 strt++;
+                                             }
+                                             
+                                            
+                                            
+                                     },
+                                     error: function(response)
+                                     {
+                                     },
+                        });
+}
+
+
+
+$(window).on('load', function() {
+                  
+                    GetChatList();
+                  $("#scrldn").scrollTop( $("#scrldn").prop('scrollHeight') - $("#scrldn").outerHeight() );          
+                 //$('#scrldn').scrollTop($('#scrldn')[0].scrollHeight);
+                
+});
+
+
+                        
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js"></script>
+
+
+

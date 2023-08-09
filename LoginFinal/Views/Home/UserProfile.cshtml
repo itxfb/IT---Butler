@@ -1,0 +1,250 @@
+﻿@using LoginFinal.HelpingClasses
+@model List<User>
+@inject GeneralPurpose gp
+@{
+    User loggedinUser = gp.ValidateLoggedinUser();
+    ViewBag.Title = "Seller Details";
+    Layout = "~/Views/Shared/_FrontLayout.cshtml";
+}
+    <div class="main-page second py-5">
+         <div class="container">
+            <div class="row">
+               <div class="col-lg-4 left">
+                  <div class="profile_info">
+                     <div class="seller-card">
+                        <div>
+                            @if(@ViewBag.Status==1)
+                            {
+                           <div class="user-online-indicator is-online" data-user-id="1152855">
+                              <i class="fa fa-circle"></i>online
+                            </div>
+                            }
+                            else
+                            {
+                             <div class="user-online-indicator is-online" style="border-color:red;color:red !important" data-user-id="1152855">
+                              <i class="fa fa-circle"></i>offline
+                            </div>
+                            }
+                        </div>
+                        <!-- <div><a href="#" class="ambassadors-badge">Ambassador</a></div> -->
+                        <div class="user-profile-info">
+                           <div>
+                              <div>
+                                 <label class="user-pict">
+                                        @if (@Model[0].ImagePath == "" || @Model[0].ImagePath == null)
+                                        {
+                                            <img
+                                    src="~/FrontAssets/images/user/s4.png" width=256 height=256
+                                    class="img-fluid rounded-circle" id="imgprev" alt="Askbootstrap"/>
+                                        }
+                                        else
+                                        {
+                                        <img
+                                    src="~/@Model[0].ImagePath" 
+                                    class="img-fluid rounded-circle" width=256 height=256 alt="Askbootstrap"/>
+                                        }
+                                 <a href="#"
+                                    class="user-badge-round user-badge-round-med locale-en-us top-rated-seller"></a></label>
+                              </div>
+                           </div>
+                           <div class="user-profile-label pt-3">
+                              <div class="username-line">
+                                 <a href="#" id="name" class="seller-link">@Model[0].FirstName @Model[0].LastName</a>
+                              </div>
+                              <div class="oneliner-wrapper">
+                                 <small class="oneliner">@Model[0].Position</small>
+                                @* <div class="ratings-wrapper">
+                                    <p class="rating-text"><strong>5.0</strong> (1k+ reviews)</p>
+                                 </div>*@
+                              </div>
+                           </div>
+                        </div>
+                        <div class="buttons-wrapper">
+                           @if(ViewBag.pr==1)
+                            {
+                           <a href="#" class="btn-lrg-standard btn-contact-me js-contact-me js-open-popup-join">Contact Me</a>
+                            }
+                           else if(@loggedinUser!=null && ViewBag.pr!=1 && @loggedinUser.Id!=@Model[0].Id)
+                            {
+                                <a href="@Url.Action("Messages","Home", new{ rec= StringCipher.EncryptId(@Model[0].Id)})" class="btn-lrg-standard btn-contact-me js-contact-me js-open-popup-join">Contact
+                                    Me</a>
+                            }
+                            else if(@loggedinUser!=null && @loggedinUser.Id==@Model[0].Id)
+                            {
+                                  <a href="#" class="btn-lrg-standard btn-contact-me js-contact-me js-open-popup-join">Contact Me</a>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("Login","Auth", new{ msg= "Please Login to Continue!", color="red"})" class="btn-lrg-standard btn-contact-me js-contact-me js-open-popup-join">Contact
+                                    Me</a>
+                            }
+
+                            @if(@loggedinUser!=null && @loggedinUser.Id==@Model[0].Id)
+                            {
+                                  <button class="btn btn-outline-danger ml-2"><i class="fa fa-solid fa-gift" style="font-size:20px;" title="Share User Refferal"></i></button>
+                            }
+                            else
+                            {
+                            <button onclick="CopyFunc()" class="btn btn-outline-danger ml-2"><i class="fa fa-solid fa-gift" style="font-size:20px;" title="Share User Refferal"></i></button>
+                            }
+                            <input type="hidden" id="refval" value="@ProjectVariables.baseUrl/Home/Messages?rec=@StringCipher.EncryptId(@Model[0].Id)&refx=@loggedinUser.Refferal_Code"/>
+                           @*<div class="btn-lrg-standard btn-white btn-custom-order">Share Refferal</div>*@
+                        </div>
+                        <div class="user-stats-desc">
+                           <ul class="user-stats">
+                              <li class="location">From<strong>@Model[0].Country</strong></li>
+                              <li class="member-since">Member since<strong>@Convert.ToDateTime(@Model[0].CreatedAt).ToString("MMMM yyyy")</strong></li>
+                                @if(@Model[0].Language!=null)
+                               {
+                              <li class="fa-solid fa-language">Language<strong>@Model[0].Language</strong></li>
+                               }
+                              <!-- <li class="recent-delivery">Recent Delivery<strong>about&nbsp;15</strong></li> -->
+                           </ul>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="seller-profile">
+                     <div class="skills">
+                        <h3>Skills</h3>
+                        <ul>
+                            @if(@Model[0].Skills!=null)
+                            @foreach(var x in @Model[0].Skills)
+                            {
+                                    @if (@x.IsActive != 0)
+                                    {
+                                        string[] split = @x.SkillName.Split(',');
+                                        foreach (var y in split)
+                                        {
+                                            <li style="background:#138496 !important;">
+                                                <a style="color:white !important;"  href="@Url.Action("Search","Home",new{ search=@y})">@y</a>
+                                            </li>
+                                        }
+                                    }
+                                }
+                        </ul>
+                     </div>
+                     <div class="linked-accounts">
+                        <h3>Linked Accounts</h3>
+                        <ul>
+                           <a href="@Model[0].FacebookLink"><li class="platform social-account facebook"><i class="platform-icon facebook hint--top"
+                              aria-hidden="true" data-hint="facebook"></i><span class="text">Facebook</span></li></a>
+                           <a href="@Model[0].GoogleLink"><li class="platform social-account google"><i class="platform-icon google hint--top"
+                              aria-hidden="true" data-hint="google"></i><span class="text">Google</span></li></a>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+               
+               <div class="col-lg-8 right">
+                    <div class="stats-desc" style="margin-top: 0px !important; margin-bottom: 24px !important;">
+                        <ul class="user-stats">
+                           <li>From<strong>@Model[0].Country</strong></li>
+                           <li>Member since<strong>@Convert.ToDateTime(@Model[0].CreatedAt).ToString("MMMM yyyy")</strong></li>
+                            @if(@Model[0].Language!=null)
+                               {
+                           <li>Language<strong>@Model[0].Language</strong></li>
+                               }
+                        </ul>
+                        @if(@Model[0].Description!=null)
+                               {
+                        <article class="seller-desc pbox" >
+                           <div class="inner">
+                               
+                               <p style="font-weight:bold;">About</p>
+                              <p>@Model[0].Description</p>
+                               
+                           </div>
+                        </article>
+                               }
+
+                     </div>
+
+                  <div class="seller-profile">
+                     <div class="description">
+
+                     <div class="education-list list">
+                        <h3>Education</h3>
+                        <ul>
+                            @if(@Model[0].Education!=null)
+                            @foreach(var x in @Model[0].Education)
+                            {
+                           <li>
+                               @if(@x.IsActive!=0)
+                               {
+                              <p>@x.InstituteName - @x.DegreeName</p>
+                              <p>@Convert.ToDateTime(@x.StartDate).ToString("dd-MMMM-yyyy") - @Convert.ToDateTime(@x.EndDate).ToString("dd-MMMM-yyyy")</p>
+                               }
+                           </li>
+                            }
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="seller-profile">
+                     <div class="description">
+
+                     <div class="education-list list">
+                        <h3>Experience</h3>
+                        <ul>
+                           <li>
+                              <p>Worked as @Model[0].Position in @Model[0].Company</p>
+                                    @if (@Model[0].Experience_From != null && @Model[0].Experience_To != null)
+                                    {
+                                        <p>@Convert.ToDateTime(@Model[0].Experience_From).ToString("dd-MMMM-yyyy") - @Convert.ToDateTime(@Model[0].Experience_To).ToString("dd-MMMM-yyyy")</p>
+                                    }
+                                </li>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+
+
+               <div class="seller-profile">
+               <div class="tags" style="padding:5px !important;">
+                     <h5>Related tags</h5>
+                     <ul class="d-flex">
+                         @if(@Model[0].Tags!=null)
+                          @foreach(var x in @Model[0].Tags)
+                            {
+                                @if(@x.IsActive!=0)
+                                {
+                            string[] split = @x.TagName.Split(',');
+                            foreach (var y in split)
+                              {
+                               <li>
+                                <a style="background:#138496 !important; color: white;" href="@Url.Action("Search","Home",new{ search=@y})">@y</a>
+                                </li>
+                                    }
+                                }
+                            }
+                     </ul>
+              </div>
+              </div>
+            </div>
+         </div>
+      </div>
+      <script>
+          function CopyFunc() {
+  ///* Get the text field */
+  var copyText = document.getElementById("refval");
+
+  ///* Select the text field */
+  //copyText.select();
+  //copyText.setSelectionRange(0, 99999); /* For mobile devices */
+
+  // /* Copy the text inside the text field */
+  //navigator.clipboard.writeText(copyText.value);
+
+  copyToClipboard(copyText.value).then(() => console.log('text copied !'))
+    .catch(() => console.log('error'));
+
+    window.setTimeout(function () {
+        $("#CopyModal").modal("hide");
+    }, 2500);
+
+    alert("Copied!");
+
+
+}
+      </script>
